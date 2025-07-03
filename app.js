@@ -1,3 +1,59 @@
+
+// ========================
+// Lógica de Cumplimiento personalizada (solo tarjetas y promedios)
+// ========================
+const indicadoresMenorEsMejor = [
+    "Clientes con Riesgo Alto",
+    "Rendimiento del Canal Simplificado",
+    "Reintentos de Activación",
+    "Tasa de re-procesos por errores o documentación incompleta",
+    "% de derivaciones innecesarias a Gestión Comercial",
+    "Modificación Sin Reproceso: % de datos actualizados sin necesidad de corrección",
+    "% de flujos sin errores técnicos en servicios",
+    "Tiempo al Checkpoint: promedio hasta señal de actualización registrada",
+    "% de procesos cancelados por inconsistencias en datos o falta de consentimiento",
+    "Tasa de errores en validaciones cruzadas entre CORE y CRM",
+    "% de rechazos por inconsistencias en formato de consentimiento",
+    "Abandono durante el Onboarding",
+    "% de actualizaciones resueltas en una sola interacción",
+    "% de procesos sin reclamos o solicitudes de ayuda"
+];
+
+function evaluarCumplimiento(indicador, valor, objetivo) {
+    const nombre = indicador.Nombre;
+    const valorNum = parseFloat(valor);
+    const objetivoNum = parseFloat(objetivo);
+    if (isNaN(valorNum) || isNaN(objetivoNum)) return "sin_dato";
+
+    const esMenorMejor = indicadoresMenorEsMejor.includes(nombre);
+
+    if (esMenorMejor) {
+        if (valorNum <= objetivoNum) return "cumple";
+        else if (valorNum <= objetivoNum * 1.2) return "alerta";
+        else return "incumple";
+    } else {
+        if (valorNum >= objetivoNum) return "cumple";
+        else if (valorNum >= objetivoNum * 0.8) return "alerta";
+        else return "incumple";
+    }
+}
+
+function calcularCumplimientoRelativo(indicador, valor, objetivo) {
+    const nombre = indicador.Nombre;
+    const valorNum = parseFloat(valor);
+    const objetivoNum = parseFloat(objetivo);
+    if (isNaN(valorNum) || isNaN(objetivoNum)) return 0;
+
+    const esMenorMejor = indicadoresMenorEsMejor.includes(nombre);
+
+    if (esMenorMejor) {
+        return (objetivoNum / valorNum) * 100;
+    } else {
+        return (valorNum / objetivoNum) * 100;
+    }
+}
+
+
 // =============================================
 // DATOS COMPLETOS EMBEBIDOS
 // =============================================
