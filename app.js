@@ -1,59 +1,3 @@
-
-// ========================
-// Lógica de Cumplimiento personalizada
-// ========================
-const indicadoresMenorEsMejor = [
-    "Clientes con Riesgo Alto",
-    "Rendimiento del Canal Simplificado",
-    "Reintentos de Activación",
-    "Tasa de re-procesos por errores o documentación incompleta",
-    "% de derivaciones innecesarias a Gestión Comercial",
-    "Modificación Sin Reproceso: % de datos actualizados sin necesidad de corrección",
-    "% de flujos sin errores técnicos en servicios",
-    "Tiempo al Checkpoint: promedio hasta señal de actualización registrada",
-    "% de procesos cancelados por inconsistencias en datos o falta de consentimiento",
-    "Tasa de errores en validaciones cruzadas entre CORE y CRM",
-    "% de rechazos por inconsistencias en formato de consentimiento",
-    "Abandono durante el Onboarding",
-    "% de actualizaciones resueltas en una sola interacción",
-    "% de procesos sin reclamos o solicitudes de ayuda"
-];
-
-function evaluarCumplimiento(indicador, valor, objetivo) {
-    const nombre = indicador.Nombre;
-    const valorNum = parseFloat(valor);
-    const objetivoNum = parseFloat(objetivo);
-    if (isNaN(valorNum) || isNaN(objetivoNum)) return "sin_dato";
-
-    const esMenorMejor = indicadoresMenorEsMejor.includes(nombre);
-
-    if (esMenorMejor) {
-        if (valorNum <= objetivoNum) return "cumple";
-        else if (valorNum <= objetivoNum * 1.2) return "alerta";
-        else return "incumple";
-    } else if (estado === "incumple") {
-        if (valorNum >= objetivoNum) return "cumple";
-        else if (valorNum >= objetivoNum * 0.8) return "alerta";
-        else return "incumple";
-    }
-}
-
-function calcularCumplimientoRelativo(indicador, valor, objetivo) {
-    const nombre = indicador.Nombre;
-    const valorNum = parseFloat(valor);
-    const objetivoNum = parseFloat(objetivo);
-    if (isNaN(valorNum) || isNaN(objetivoNum)) return 0;
-
-    const esMenorMejor = indicadoresMenorEsMejor.includes(nombre);
-
-    if (esMenorMejor) {
-        return (objetivoNum / valorNum) * 100;
-    } else if (estado === "incumple") {
-        return (valorNum / objetivoNum) * 100;
-    }
-}
-
-
 // =============================================
 // DATOS COMPLETOS EMBEBIDOS
 // =============================================
@@ -163,8 +107,11 @@ const localData = {
 let sucursalesParaguay = localData.sucursales;
 let kpisData = localData.kpis;
 let historicalData = localData.historical;
-let currentChart = null;
-let isMatrizView = false;
+let currentCharts = {
+    eficiencia: null,
+    calidad: null,
+    experiencia: null
+};
 let historicalValues = {};
 let expandedGroups = {
     perspectiva: {},
@@ -197,7 +144,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         loadSucursales();
         setupEventListeners();
         updateDashboard();
-        renderHistoricalChart();
+        renderMiniCharts();
         
     } catch (error) {
         console.error('Error al cargar datos:', error);
@@ -213,7 +160,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         loadSucursales();
         setupEventListeners();
         updateDashboard();
-        renderHistoricalChart();
+        renderMiniCharts();
     }
 });
 
@@ -316,16 +263,6 @@ function setupEventListeners() {
     document.getElementById('perspectiva-select').addEventListener('change', updateDashboard);
     document.getElementById('periodo-select').addEventListener('change', updateDashboard);
     
-    document.getElementById('dashboard-link').addEventListener('click', function(e) {
-        e.preventDefault();
-        switchToDashboard();
-    });
-    
-    document.getElementById('matriz-link').addEventListener('click', function(e) {
-        e.preventDefault();
-        switchToMatriz();
-    });
-    
     document.addEventListener('mouseover', function(e) {
         if (e.target.classList.contains('kpi-name')) {
             showTooltip(e.target);
@@ -359,26 +296,12 @@ function toggleGroup(groupId, groupType, element) {
             row.style.display = 'none';
             icon.classList.remove('bi-dash-square');
             icon.classList.add('bi-plus-square');
-        } else if (estado === "incumple") {
+        } else {
             row.style.display = '';
             icon.classList.remove('bi-plus-square');
             icon.classList.add('bi-dash-square');
         }
     });
-}
-
-function switchToDashboard() {
-    isMatrizView = false;
-    document.getElementById('dashboard-title').textContent = 'Red de Sucursales - KPIs';
-    document.getElementById('filtros-sucursal').style.display = 'block';
-    updateDashboard();
-}
-
-function switchToMatriz() {
-    isMatrizView = true;
-    document.getElementById('dashboard-title').textContent = 'Casa Matriz - KPIs Centrales';
-    document.getElementById('filtros-sucursal').style.display = 'none';
-    updateDashboard();
 }
 
 function updateDashboard() {
@@ -397,10 +320,8 @@ function updateDashboard() {
         return;
     }
     
-    // Filtrar KPIs según vista (matriz o sucursales)
-    let filteredKpis = isMatrizView 
-        ? kpisData.filter(kpi => kpi.granularidad.includes("Segmento") || kpi.granularidad.includes("Producto"))
-        : kpisData;
+    // Filtrar KPIs según perspectiva
+    let filteredKpis = kpisData;
     
     // Aplicar filtro de perspectiva
     if (perspectiva !== 'todas') {
@@ -411,21 +332,19 @@ function updateDashboard() {
     // Calcular variación basada en sucursal y oficial
     let variationFactor = 1;
     
-    if (!isMatrizView) {
-        // Variación por sucursal
-        if (sucursalId !== 'todas') {
-            const sucursal = sucursalesParaguay.find(s => s.id == sucursalId);
-            if (sucursal) {
-                // Cada sucursal tiene un factor de variación basado en su ID
-                variationFactor *= 0.9 + (sucursal.id % 10) * 0.02;
-            }
+    // Variación por sucursal
+    if (sucursalId !== 'todas') {
+        const sucursal = sucursalesParaguay.find(s => s.id == sucursalId);
+        if (sucursal) {
+            // Cada sucursal tiene un factor de variación basado en su ID
+            variationFactor *= 0.9 + (sucursal.id % 10) * 0.02;
         }
-        
-        // Variación por oficial
-        if (oficial !== 'todos') {
-            // Cada oficial tiene un factor de variación basado en la longitud de su nombre
-            variationFactor *= 0.95 + (oficial.length % 10) * 0.01;
-        }
+    }
+    
+    // Variación por oficial
+    if (oficial !== 'todos') {
+        // Cada oficial tiene un factor de variación basado en la longitud de su nombre
+        variationFactor *= 0.95 + (oficial.length % 10) * 0.01;
     }
     
     // Aplicar variación a los KPIs
@@ -434,9 +353,9 @@ function updateDashboard() {
         const baseValue = historicalValues[kpi.id]?.[currentMonth] || kpi.valorActual;
         const baseBudget = kpi.valorBudget;
         
-        // Aplicar variación solo si no estamos en vista matriz
-        const adjustedValue = isMatrizView ? baseValue : baseValue * variationFactor;
-        const adjustedBudget = isMatrizView ? baseBudget : baseBudget * (variationFactor > 1 ? variationFactor * 0.98 : variationFactor * 1.02);
+        // Aplicar variación
+        const adjustedValue = baseValue * variationFactor;
+        const adjustedBudget = baseBudget * (variationFactor > 1 ? variationFactor * 0.98 : variationFactor * 1.02);
         
         // Asegurar que los valores estén dentro de rangos razonables
         let finalValue = adjustedValue;
@@ -458,16 +377,14 @@ function updateDashboard() {
     });
     
     // Calcular valores agregados para las tarjetas principales
-    let eficienciaValue = historicalData.eficiencia[currentMonthIndex];
-    let calidadValue = historicalData.calidad[currentMonthIndex];
-    let experienciaValue = historicalData.experiencia[currentMonthIndex];
+    let eficienciaValue = historicalData.eficiencia[currentMonthIndex] * variationFactor;
+    let calidadValue = historicalData.calidad[currentMonthIndex] * variationFactor;
+    let experienciaValue = historicalData.experiencia[currentMonthIndex] * variationFactor;
     
-    if (!isMatrizView) {
-        // Aplicar variación a los valores de las tarjetas principales
-        eficienciaValue = Math.min(100, eficienciaValue * variationFactor);
-        calidadValue = Math.min(100, calidadValue * variationFactor);
-        experienciaValue = Math.min(100, experienciaValue * variationFactor);
-    }
+    // Asegurar que no excedan 100%
+    eficienciaValue = Math.min(100, eficienciaValue);
+    calidadValue = Math.min(100, calidadValue);
+    experienciaValue = Math.min(100, experienciaValue);
     
     // Actualizar tarjetas con los valores del mes seleccionado
     updateKpiCard('eficiencia', eficienciaValue, 85, currentMonth);
@@ -477,8 +394,8 @@ function updateDashboard() {
     // Actualizar tabla con los KPIs filtrados
     updateKpiTable(filteredKpis, currentMonth);
     
-    // Actualizar gráfico histórico
-    updateHistoricalChart();
+    // Actualizar mini gráficos
+    updateMiniCharts(currentMonthIndex);
 }
 
 function updateKpiCard(kpiType, value, target, currentMonth) {
@@ -498,7 +415,7 @@ function updateKpiCard(kpiType, value, target, currentMonth) {
         indicator = "🟡";
         progressElement.classList.remove('bg-success', 'bg-danger');
         progressElement.classList.add('bg-warning');
-    } else if (estado === "incumple") {
+    } else {
         progressElement.classList.remove('bg-success', 'bg-warning');
         progressElement.classList.add('bg-danger');
     }
@@ -535,12 +452,12 @@ function updateKpiTable(kpis, currentMonth) {
     kpis.forEach(kpi => {
         if (!groupedData[kpi.perspectiva]) {
             groupedData[kpi.perspectiva] = {};
-            expandedGroups.perspectiva[kpi.perspectiva] = expandedGroups.perspectiva[kpi.perspectiva] !== undefined ? expandedGroups.perspectiva[kpi.perspectiva] : true;
+            expandedGroups.perspectiva[kpi.perspectiva] = false; // Inicialmente cerrado
         }
         
         if (!groupedData[kpi.perspectiva][kpi.proceso]) {
             groupedData[kpi.perspectiva][kpi.proceso] = [];
-            expandedGroups.proceso[kpi.proceso] = expandedGroups.proceso[kpi.proceso] !== undefined ? expandedGroups.proceso[kpi.proceso] : true;
+            expandedGroups.proceso[kpi.proceso] = false; // Inicialmente cerrado
         }
         
         groupedData[kpi.perspectiva][kpi.proceso].push(kpi);
@@ -644,90 +561,100 @@ function getPreviousYear(currentMonth) {
     return currentIndex >= 12 ? months[currentIndex - 12] : null;
 }
 
-function renderHistoricalChart() {
-    const ctx = document.getElementById('historicalChart').getContext('2d');
+function renderMiniCharts() {
+    const eficienciaCtx = document.getElementById('eficienciaChart').getContext('2d');
+    const calidadCtx = document.getElementById('calidadChart').getContext('2d');
+    const experienciaCtx = document.getElementById('experienciaChart').getContext('2d');
     
-    currentChart = new Chart(ctx, {
+    const commonOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: false
+            },
+            tooltip: {
+                enabled: false
+            }
+        },
+        scales: {
+            x: {
+                display: false
+            },
+            y: {
+                display: false,
+                min: 50,
+                max: 100
+            }
+        },
+        elements: {
+            point: {
+                radius: 0
+            },
+            line: {
+                tension: 0.4,
+                borderWidth: 2
+            }
+        }
+    };
+    
+    currentCharts.eficiencia = new Chart(eficienciaCtx, {
         type: 'line',
         data: {
             labels: historicalData.labels,
-            datasets: [
-                {
-                    label: 'Eficiencia',
-                    data: historicalData.eficiencia,
-                    borderColor: '#3498db',
-                    backgroundColor: 'rgba(52, 152, 219, 0.1)',
-                    tension: 0.3,
-                    fill: true
-                },
-                {
-                    label: 'Calidad',
-                    data: historicalData.calidad,
-                    borderColor: '#2ecc71',
-                    backgroundColor: 'rgba(46, 204, 113, 0.1)',
-                    tension: 0.3,
-                    fill: true
-                },
-                {
-                    label: 'Experiencia',
-                    data: historicalData.experiencia,
-                    borderColor: '#f39c12',
-                    backgroundColor: 'rgba(243, 156, 18, 0.1)',
-                    tension: 0.3,
-                    fill: true
-                }
-            ]
+            datasets: [{
+                data: historicalData.eficiencia,
+                borderColor: '#3498db',
+                backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                fill: true
+            }]
         },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'top',
-                },
-                tooltip: {
-                    mode: 'index',
-                    intersect: false,
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: false,
-                    min: 50,
-                    max: 100,
-                    title: {
-                        display: true,
-                        text: 'Porcentaje de Cumplimiento'
-                    }
-                }
-            },
-            interaction: {
-                mode: 'nearest',
-                axis: 'x',
-                intersect: false
-            }
-        }
+        options: commonOptions
+    });
+    
+    currentCharts.calidad = new Chart(calidadCtx, {
+        type: 'line',
+        data: {
+            labels: historicalData.labels,
+            datasets: [{
+                data: historicalData.calidad,
+                borderColor: '#2ecc71',
+                backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                fill: true
+            }]
+        },
+        options: commonOptions
+    });
+    
+    currentCharts.experiencia = new Chart(experienciaCtx, {
+        type: 'line',
+        data: {
+            labels: historicalData.labels,
+            datasets: [{
+                data: historicalData.experiencia,
+                borderColor: '#f39c12',
+                backgroundColor: 'rgba(243, 156, 18, 0.1)',
+                fill: true
+            }]
+        },
+        options: commonOptions
     });
 }
 
-function updateHistoricalChart() {
-    if (!currentChart) return;
-    
-    const periodo = document.getElementById('periodo-select').value;
-    const currentMonth = getCurrentMonthFromPeriod(periodo);
-    const currentIndex = historicalData.labels.indexOf(currentMonth);
-    
-    if (currentIndex === -1) return;
-    
-    currentChart.data.datasets.forEach(dataset => {
-        dataset.pointBackgroundColor = dataset.data.map((_, i) => 
-            i === currentIndex ? '#ff0000' : dataset.borderColor
-        );
-        dataset.pointRadius = dataset.data.map((_, i) => 
-            i === currentIndex ? 6 : 3
-        );
+function updateMiniCharts(currentMonthIndex) {
+    Object.values(currentCharts).forEach(chart => {
+        if (chart) {
+            chart.data.datasets.forEach(dataset => {
+                dataset.pointBackgroundColor = dataset.data.map((_, i) => 
+                    i === currentMonthIndex ? '#ff0000' : 'transparent'
+                );
+                dataset.pointRadius = dataset.data.map((_, i) => 
+                    i === currentMonthIndex ? 3 : 0
+                );
+            });
+            chart.update();
+        }
     });
-    
-    currentChart.update();
 }
 
 function showTooltip(element) {
@@ -748,9 +675,6 @@ function showTooltip(element) {
     tooltip.style.display = 'block';
 }
 
-function hideTooltip() {
-    document.getElementById('kpi-tooltip').style.display = 'none';
-}
 function hideTooltip() {
     document.getElementById('kpi-tooltip').style.display = 'none';
 }
