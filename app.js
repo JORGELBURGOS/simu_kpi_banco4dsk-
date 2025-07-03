@@ -1,26 +1,15 @@
+// ========================
+// Lógica de Cumplimiento personalizada (con nombre normalizado)
+// ========================
+const indicadoresMenorEsMejor = ['clientes con riesgo alto', 'rendimiento del canal simplificado', 'reintentos de activacion', 'tasa de reprocesos por errores o documentacion incompleta', 'de derivaciones innecesarias a gestion comercial', 'modificacion sin reproceso de datos actualizados sin necesidad de correccion', 'de flujos sin errores tecnicos en servicios', 'tiempo al checkpoint promedio hasta senal de actualizacion registrada', 'de procesos cancelados por inconsistencias en datos o falta de consentimiento', 'tasa de errores en validaciones cruzadas entre core y crm', 'de rechazos por inconsistencias en formato de consentimiento', 'abandono durante el onboarding', 'de actualizaciones resueltas en una sola interaccion', 'de procesos sin reclamos o solicitudes de ayuda'];
 
-// ========================
-// Lógica de Cumplimiento personalizada (solo tarjetas y promedios)
-// ========================
-const indicadoresMenorEsMejor = [
-    "Clientes con Riesgo Alto",
-    "Rendimiento del Canal Simplificado",
-    "Reintentos de Activación",
-    "Tasa de re-procesos por errores o documentación incompleta",
-    "% de derivaciones innecesarias a Gestión Comercial",
-    "Modificación Sin Reproceso: % de datos actualizados sin necesidad de corrección",
-    "% de flujos sin errores técnicos en servicios",
-    "Tiempo al Checkpoint: promedio hasta señal de actualización registrada",
-    "% de procesos cancelados por inconsistencias en datos o falta de consentimiento",
-    "Tasa de errores en validaciones cruzadas entre CORE y CRM",
-    "% de rechazos por inconsistencias en formato de consentimiento",
-    "Abandono durante el Onboarding",
-    "% de actualizaciones resueltas en una sola interacción",
-    "% de procesos sin reclamos o solicitudes de ayuda"
-];
+function normalizarNombre(nombre) {
+    return nombre.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "")
+                 .replace(/[^a-z0-9\s%]/gi, "").trim();
+}
 
 function evaluarCumplimiento(indicador, valor, objetivo) {
-    const nombre = indicador.Nombre;
+    const nombre = normalizarNombre(indicador.Nombre);
     const valorNum = parseFloat(valor);
     const objetivoNum = parseFloat(objetivo);
     if (isNaN(valorNum) || isNaN(objetivoNum)) return "sin_dato";
@@ -39,10 +28,10 @@ function evaluarCumplimiento(indicador, valor, objetivo) {
 }
 
 function calcularCumplimientoRelativo(indicador, valor, objetivo) {
-    const nombre = indicador.Nombre;
+    const nombre = normalizarNombre(indicador.Nombre);
     const valorNum = parseFloat(valor);
     const objetivoNum = parseFloat(objetivo);
-    if (isNaN(valorNum) || isNaN(objetivoNum)) return 0;
+    if (isNaN(valorNum) || isNaN(objetivoNum) || valorNum === 0) return 0;
 
     const esMenorMejor = indicadoresMenorEsMejor.includes(nombre);
 
