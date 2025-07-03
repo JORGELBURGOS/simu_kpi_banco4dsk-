@@ -1,7 +1,22 @@
 // ========================
 // Lógica de Cumplimiento personalizada (con nombre normalizado)
 // ========================
-const indicadoresMenorEsMejor = ['clientes con riesgo alto', 'rendimiento del canal simplificado', 'reintentos de activacion', 'tasa de reprocesos por errores o documentacion incompleta', 'de derivaciones innecesarias a gestion comercial', 'modificacion sin reproceso de datos actualizados sin necesidad de correccion', 'de flujos sin errores tecnicos en servicios', 'tiempo al checkpoint promedio hasta senal de actualizacion registrada', 'de procesos cancelados por inconsistencias en datos o falta de consentimiento', 'tasa de errores en validaciones cruzadas entre core y crm', 'de rechazos por inconsistencias en formato de consentimiento', 'abandono durante el onboarding', 'de actualizaciones resueltas en una sola interaccion', 'de procesos sin reclamos o solicitudes de ayuda'];
+const indicadoresMenorEsMejor = [
+    "clientes con riesgo alto",
+    "rendimiento del canal simplificado",
+    "reintentos de activacion",
+    "tasa de reprocesos por errores o documentacion incompleta",
+    "de derivaciones innecesarias a gestion comercial",
+    "modificacion sin reproceso de datos actualizados sin necesidad de correccion",
+    "de flujos sin errores tecnicos en servicios",
+    "tiempo al checkpoint promedio hasta senal de actualizacion registrada",
+    "de procesos cancelados por inconsistencias en datos o falta de consentimiento",
+    "tasa de errores en validaciones cruzadas entre core y crm",
+    "de rechazos por inconsistencias en formato de consentimiento",
+    "abandono durante el onboarding",
+    "de actualizaciones resueltas en una sola interaccion",
+    "de procesos sin reclamos o solicitudes de ayuda"
+];
 
 function normalizarNombre(nombre) {
     return nombre.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "")
