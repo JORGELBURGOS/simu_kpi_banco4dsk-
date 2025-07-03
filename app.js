@@ -1,49 +1,60 @@
 
 // ==============================
-// Lógica de Cumplimiento (Menor = Mejor)
+// Reorganización lógica: INDICADOR → PROCESO → PERSPECTIVA
 // ==============================
 
-const indicadoresMenorEsMejor = [
-    "abandono durante el onboarding", "clientes con riesgo alto", "de derivaciones innecesarias a gestion comercial", "de procesos cancelados por inconsistencias en datos o falta de consentimiento", "despegue asegurado tiempo promedio de carga a emision", "errores de carga de datos", "flujo sin trazas rojas  de flujos sin errores tecnicos en servicios", "friccion cero  de procesos sin reclamos o solicitudes de ayuda", "modificacion sin reproceso  de datos actualizados sin necesidad de correccion", "perfil en foco  de actualizaciones sin errores de carga", "proceso transparente  de clientes con visibilidad en tiempo real del estado", "pulso del perfil tiempo medio de actualizacion completada", "reintentos de activacion", "rendimiento del canal simplificado", "sincronia legal  de rechazos por inconsistencias en formato de consentimiento", "solicitud sin desvios  de procesos sin reintentos ni errores", "tasa de errores en validaciones cruzadas entre core y crm", "tasa de reprocesos por errores o documentacion incompleta", "tiempo al checkpoint promedio hasta senal de actualizacion registrada", "tiempo al consentimiento promedio hasta obtener aprobacion del cliente", "tiempo de espera invisible  de confirmaciones enviadas dentro de las 2hs", "tiempo de onboarding del cliente", "tiempo hasta activacion de cuenta", "tiempo hasta vinculacion demora promedio hasta linkeo con producto financiero", "tiempo percibido de apertura", "tiempo promedio de respuesta desde solicitud hasta contacto del ejecutivo", "tiempo promedio desde solicitud hasta desembolso", "tramite sin vueltas  de actualizaciones resueltas en una sola interaccion", "velocidad de actualizacion tiempo medio hasta confirmacion del cambio", "velocidad de sintonia  de actualizaciones completadas sin reintentos"
-];
+const acumuladorPorProceso = {};
+const acumuladorPorPerspectiva = {};
 
-function normalizarNombre(nombre) {
-    return nombre.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "")
-                .replace(/[^a-z0-9\s%]/gi, "").trim();
+function procesarIndicadoresTabla(indicadores, valores, objetivos) {
+    const resultados = [];
+    indicadores.forEach(indicador => {
+        const key = `${indicador.ID}`;
+        const valor = valores[key];
+        const objetivo = objetivos[key];
+
+        const cumplimiento = calcularCumplimientoRelativo(indicador, valor, objetivo);
+        const estado = evaluarCumplimiento(indicador, valor, objetivo);
+
+        indicador.valor = valor;
+        indicador.objetivo = objetivo;
+        indicador.cumplimiento = cumplimiento;
+        indicador.estado = estado;
+
+        // Acumulador por proceso
+        if (!acumuladorPorProceso[indicador.Proceso]) acumuladorPorProceso[indicador.Proceso] = [];
+        acumuladorPorProceso[indicador.Proceso].push(cumplimiento);
+
+        // Acumulador por perspectiva
+        if (!acumuladorPorPerspectiva[indicador.Clase]) acumuladorPorPerspectiva[indicador.Clase] = [];
+        // aún no se acumulan procesos, se hará luego
+
+        resultados.push(indicador);
+    });
+
+    // Luego: calcular promedios de cada proceso y acumular en perspectiva
+    for (let proceso in acumuladorPorProceso) {
+        const promedioProceso = promedio(acumuladorPorProceso[proceso]);
+        const perspectiva = indicadores.find(i => i.Proceso === proceso)?.Clase;
+        if (perspectiva) {
+            acumuladorPorPerspectiva[perspectiva].push(promedioProceso);
+        }
+    }
+
+    return resultados;
 }
 
-function evaluarCumplimiento(indicador, valor, objetivo) {
-    const nombre = normalizarNombre(indicador.Nombre);
-    const valorNum = parseFloat(valor);
-    const objetivoNum = parseFloat(objetivo);
-    if (isNaN(valorNum) || isNaN(objetivoNum)) return "sin_dato";
-
-    const esMenorMejor = indicadoresMenorEsMejor.some(p => nombre.includes(p));
-
-    if (esMenorMejor) {
-        if (valorNum <= objetivoNum) return "cumple";
-        else if (valorNum <= objetivoNum * 1.2) return "alerta";
-        else return "incumple";
-    } else {
-        if (valorNum >= objetivoNum) return "cumple";
-        else if (valorNum >= objetivoNum * 0.8) return "alerta";
-        else return "incumple";
-    }
+function promedio(arr) {
+    if (!arr || arr.length === 0) return 0;
+    return arr.reduce((a, b) => a + b, 0) / arr.length;
 }
 
-function calcularCumplimientoRelativo(indicador, valor, objetivo) {
-    const nombre = normalizarNombre(indicador.Nombre);
-    const valorNum = parseFloat(valor);
-    const objetivoNum = parseFloat(objetivo);
-    if (isNaN(valorNum) || isNaN(objetivoNum) || valorNum === 0) return 0;
-
-    const esMenorMejor = indicadoresMenorEsMejor.some(p => nombre.includes(p));
-
-    if (esMenorMejor) {
-        return (objetivoNum / valorNum) * 100;
-    } else {
-        return (valorNum / objetivoNum) * 100;
+function resumenFinalPorPerspectiva() {
+    const resumen = {};
+    for (let perspectiva in acumuladorPorPerspectiva) {
+        resumen[perspectiva] = promedio(acumuladorPorPerspectiva[perspectiva]);
     }
+    return resumen;
 }
 
 
