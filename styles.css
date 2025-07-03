@@ -143,6 +143,11 @@ main {
     color: var(--accent-color);
 }
 
+.mini-chart {
+    width: 100%;
+    height: 80px;
+}
+
 @media (max-width: 768px) {
     .sidebar {
         position: static;

@@ -15,18 +15,13 @@
             <div class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
                 <div class="position-sticky pt-3">
                     <div class="text-center mb-4">
-                        <h4 class="text-white">BANCO EJEMPLO</h4>
+                        <h4 class="text-white">BANCO PARAGUAY</h4>
                         <hr class="text-white">
                     </div>
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link active" href="#" id="dashboard-link">
-                                <i class="bi bi-speedometer2 me-2"></i>Red de Sucursales
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" id="matriz-link">
-                                <i class="bi bi-building me-2"></i>Casa Matriz
+                            <a class="nav-link active" href="#">
+                                <i class="bi bi-speedometer2 me-2"></i>Dashboard
                             </a>
                         </li>
                         <li class="nav-item">
@@ -36,25 +31,25 @@
                         </li>
                     </ul>
                     <div class="mt-4 p-3 bg-secondary rounded">
-                        <h6 class="text-white">Período</h6>
-                        <select class="form-select form-select-sm" id="periodo-select">
-                            <option value="2024-06">Junio 2024</option>
-                            <option value="2024-07">Julio 2024</option>
-                            <option value="2024-08">Agosto 2024</option>
-                            <option value="2024-09">Septiembre 2024</option>
-                            <option value="2024-10">Octubre 2024</option>
-                            <option value="2024-11">Noviembre 2024</option>
-                            <option value="2024-12">Diciembre 2024</option>
-                            <option value="2025-01">Enero 2025</option>
-                            <option value="2025-02">Febrero 2025</option>
-                            <option value="2025-03">Marzo 2025</option>
-                            <option value="2025-04">Abril 2025</option>
-                            <option value="2025-05">Mayo 2025</option>
-                            <option value="2025-06" selected>Junio 2025</option>
-                        </select>
-                    </div>
-                    <div class="mt-3 p-3 bg-secondary rounded" id="filtros-sucursal">
                         <h6 class="text-white">Filtros</h6>
+                        <div class="mb-3">
+                            <label for="periodo-select" class="form-label text-white">Período</label>
+                            <select class="form-select form-select-sm" id="periodo-select">
+                                <option value="2024-06">Junio 2024</option>
+                                <option value="2024-07">Julio 2024</option>
+                                <option value="2024-08">Agosto 2024</option>
+                                <option value="2024-09">Septiembre 2024</option>
+                                <option value="2024-10">Octubre 2024</option>
+                                <option value="2024-11">Noviembre 2024</option>
+                                <option value="2024-12">Diciembre 2024</option>
+                                <option value="2025-01">Enero 2025</option>
+                                <option value="2025-02">Febrero 2025</option>
+                                <option value="2025-03">Marzo 2025</option>
+                                <option value="2025-04">Abril 2025</option>
+                                <option value="2025-05">Mayo 2025</option>
+                                <option value="2025-06" selected>Junio 2025</option>
+                            </select>
+                        </div>
                         <div class="mb-3">
                             <label for="perspectiva-select" class="form-label text-white">Perspectiva</label>
                             <select class="form-select form-select-sm" id="perspectiva-select">
@@ -84,7 +79,7 @@
             <!-- Main content -->
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2" id="dashboard-title">Red de Sucursales - KPIs</h1>
+                    <h1 class="h2">Dashboard de KPIs</h1>
                     <div class="btn-toolbar mb-2 mb-md-0">
                         <div class="btn-group me-2">
                             <button type="button" class="btn btn-sm btn-outline-secondary">Exportar</button>
@@ -111,6 +106,9 @@
                                 <div class="progress">
                                     <div class="progress-bar bg-success" id="eficiencia-progress" role="progressbar" style="width: 0%"></div>
                                 </div>
+                                <div class="mt-3">
+                                    <canvas id="eficienciaChart" height="80"></canvas>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -130,6 +128,9 @@
                                 <div class="progress">
                                     <div class="progress-bar bg-success" id="calidad-progress" role="progressbar" style="width: 0%"></div>
                                 </div>
+                                <div class="mt-3">
+                                    <canvas id="calidadChart" height="80"></canvas>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -148,6 +149,9 @@
                                 </div>
                                 <div class="progress">
                                     <div class="progress-bar bg-success" id="experiencia-progress" role="progressbar" style="width: 0%"></div>
+                                </div>
+                                <div class="mt-3">
+                                    <canvas id="experienciaChart" height="80"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -177,16 +181,6 @@
                                 </tbody>
                             </table>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Gráfico histórico -->
-                <div class="card">
-                    <div class="card-header">
-                        <h5>Evolución Mensual</h5>
-                    </div>
-                    <div class="card-body">
-                        <canvas id="historicalChart" height="200"></canvas>
                     </div>
                 </div>
             </main>
