@@ -1,0 +1,122 @@
+[
+    {
+        "id": 1,
+        "nombre": "Asunción - Centro",
+        "oficiales": ["Juan Pérez", "María González", "Carlos López"]
+    },
+    {
+        "id": 2,
+        "nombre": "Ciudad del Este",
+        "oficiales": ["Roberto Martínez", "Ana Rodríguez", "Luis Fernández"]
+    },
+    {
+        "id": 3,
+        "nombre": "San Lorenzo",
+        "oficiales": ["Pedro Gómez", "Sofía Díaz", "Miguel Sánchez"]
+    },
+    {
+        "id": 4,
+        "nombre": "Luque",
+        "oficiales": ["José Ramírez", "Laura Álvarez", "Andrés Torres"]
+    },
+    {
+        "id": 5,
+        "nombre": "Capiatá",
+        "oficiales": ["Daniel Ruiz", "Patricia Herrera", "Fernando Castro"]
+    },
+    {
+        "id": 6,
+        "nombre": "Lambaré",
+        "oficiales": ["Ricardo Ortega", "Elena Mendoza", "Jorge Vargas"]
+    },
+    {
+        "id": 7,
+        "nombre": "Fernando de la Mora",
+        "oficiales": ["Alberto Medina", "Silvia Romero", "Hugo Guzmán"]
+    },
+    {
+        "id": 8,
+        "nombre": "Encarnación",
+        "oficiales": ["Mario Rojas", "Claudia Silva", "Raúl Flores"]
+    },
+    {
+        "id": 9,
+        "nombre": "Concepción",
+        "oficiales": ["Eduardo Acosta", "Verónica Vega", "Oscar Méndez"]
+    },
+    {
+        "id": 10,
+        "nombre": "Pedro Juan Caballero",
+        "oficiales": ["Santiago Cortés", "Natalia Paredes", "Felipe Ríos"]
+    },
+    {
+        "id": 11,
+        "nombre": "Coronel Oviedo",
+        "oficiales": ["Gustavo Núñez", "Carolina Miranda", "Diego Valdez"]
+    },
+    {
+        "id": 12,
+        "nombre": "Villarrica",
+        "oficiales": ["Hernán Peña", "Adriana Cordero", "Walter Rivas"]
+    },
+    {
+        "id": 13,
+        "nombre": "Pilar",
+        "oficiales": ["Mauricio Aguirre", "Lucía Figueroa", "Esteban Molina"]
+    },
+    {
+        "id": 14,
+        "nombre": "Caaguazú",
+        "oficiales": ["Federico Juárez", "Gabriela Espinoza", "Renato Campos"]
+    },
+    {
+        "id": 15,
+        "nombre": "Itauguá",
+        "oficiales": ["Armando Salazar", "Daniela Montes", "Rodrigo León"]
+    },
+    {
+        "id": 16,
+        "nombre": "Mariano Roque Alonso",
+        "oficiales": ["Arturo Delgado", "Marina Cervantes", "Gerardo Ponce"]
+    },
+    {
+        "id": 17,
+        "nombre": "Presidente Franco",
+        "oficiales": ["Víctor Cabrera", "Isabel Valenzuela", "Nicolás Cáceres"]
+    },
+    {
+        "id": 18,
+        "nombre": "Ayolas",
+        "oficiales": ["Omar Carrasco", "Rosa Segura", "Héctor Navarro"]
+    },
+    {
+        "id": 19,
+        "nombre": "Santa Rita",
+        "oficiales": ["Rubén Mora", "Beatriz Santana", "Emanuel Fuentes"]
+    },
+    {
+        "id": 20,
+        "nombre": "Caacupé",
+        "oficiales": ["Fabián Reyes", "Leticia Bustamante", "Sergio Orellana"]
+    },
+    {
+        "id": 21,
+        "nombre": "San Juan Bautista",
+        "oficiales": ["Iván Ávila", "Yolanda Méndez", "César Zúñiga"]
+    },
+    {
+        "id": 22,
+        "nombre": "Areguá",
+        "oficiales": ["Rolando Tapia", "Nora Salinas", "Marcelo Contreras"]
+    },
+    {
+        "id": 23,
+        "nombre": "Villeta",
+        "oficiales": ["Ernesto Moya", "Olga Lara", "Alfonso Osorio"]
+    },
+    {
+        "id": 24,
+        "nombre": "Paraguarí",
+        "oficiales": ["Julio Ferreyra", "Eva Roldán", "Tomás Palma"]
+    }
+]
