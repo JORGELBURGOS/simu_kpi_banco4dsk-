@@ -80,14 +80,71 @@
             <main class="col-12 col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <!-- Botón para mostrar/ocultar sidebar en móvil -->
                 <button class="d-md-none btn btn-primary mb-3" id="sidebarToggle">
-                    <i class="bi bi-list"></i> Menú
+                    <i class="bi bi-filter-circle"></i> Filtros
                 </button>
                 
+                <!-- Filtros móviles - se muestran como acordeón -->
+                <div class="d-md-none mb-3">
+                    <div class="accordion" id="mobileFilters">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFilters">
+                                    <i class="bi bi-funnel me-2"></i>Filtros
+                                </button>
+                            </h2>
+                            <div id="collapseFilters" class="accordion-collapse collapse" data-bs-parent="#mobileFilters">
+                                <div class="accordion-body bg-light p-3">
+                                    <div class="mb-3">
+                                        <label for="periodo-select-mobile" class="form-label">Período</label>
+                                        <select class="form-select form-select-sm" id="periodo-select-mobile">
+                                            <option value="2024-06">Junio 2024</option>
+                                            <option value="2024-07">Julio 2024</option>
+                                            <option value="2024-08">Agosto 2024</option>
+                                            <option value="2024-09">Septiembre 2024</option>
+                                            <option value="2024-10">Octubre 2024</option>
+                                            <option value="2024-11">Noviembre 2024</option>
+                                            <option value="2024-12">Diciembre 2024</option>
+                                            <option value="2025-01">Enero 2025</option>
+                                            <option value="2025-02">Febrero 2025</option>
+                                            <option value="2025-03">Marzo 2025</option>
+                                            <option value="2025-04">Abril 2025</option>
+                                            <option value="2025-05">Mayo 2025</option>
+                                            <option value="2025-06" selected>Junio 2025</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="perspectiva-select-mobile" class="form-label">Perspectiva</label>
+                                        <select class="form-select form-select-sm" id="perspectiva-select-mobile">
+                                            <option value="todas">Todas</option>
+                                            <option value="Eficiencia">Eficiencia</option>
+                                            <option value="Calidad">Calidad</option>
+                                            <option value="Satisfacción del Cliente">Experiencia</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="sucursal-select-mobile" class="form-label">Sucursal</label>
+                                        <select class="form-select form-select-sm" id="sucursal-select-mobile">
+                                            <!-- Dinámico -->
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="oficial-select-mobile" class="form-label">Oficial</label>
+                                        <select class="form-select form-select-sm" id="oficial-select-mobile">
+                                            <option value="todos">Todos</option>
+                                            <!-- Dinámico -->
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h1 class="h2">Dashboard de KPIs</h1>
-                    <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-toolbar mb-2 mb-md-0 d-none">
                         <div class="btn-group me-2">
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Exportar</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary d-none">Exportar</button>
                         </div>
                     </div>
                 </div>
@@ -210,6 +267,26 @@
             sidebar.classList.toggle('d-none');
             sidebar.classList.toggle('mobile-sidebar');
         });
+
+        // Sincronizar selects móviles con los del sidebar
+        const syncSelects = (desktopId, mobileId) => {
+            const desktopSelect = document.getElementById(desktopId);
+            const mobileSelect = document.getElementById(mobileId);
+            
+            desktopSelect.addEventListener('change', () => {
+                mobileSelect.value = desktopSelect.value;
+            });
+            
+            mobileSelect.addEventListener('change', () => {
+                desktopSelect.value = mobileSelect.value;
+            });
+        };
+
+        // Sincronizar todos los selects
+        syncSelects('periodo-select', 'periodo-select-mobile');
+        syncSelects('perspectiva-select', 'perspectiva-select-mobile');
+        syncSelects('sucursal-select', 'sucursal-select-mobile');
+        syncSelects('oficial-select', 'oficial-select-mobile');
     </script>
 </body>
 </html>
