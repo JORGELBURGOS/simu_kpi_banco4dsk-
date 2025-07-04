@@ -275,6 +275,21 @@ main {
     #kpi-table td:nth-child(6) {
         width: 10%;
     }
+    
+    /* Estilos para los filtros móviles */
+    .accordion-button {
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .accordion-body {
+        padding: 1rem;
+    }
+    
+    /* Ocultar botón exportar */
+    .btn-outline-secondary.d-none {
+        display: none !important;
+    }
 }
 
 /* Estilos para el botón de toggle en móvil */
@@ -283,7 +298,8 @@ main {
     top: 10px;
     left: 10px;
     z-index: 1040;
-    padding: 0.25rem 0.5rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
 }
 
 /* Mejorar la legibilidad en móvil */
@@ -315,5 +331,10 @@ select.form-select {
     
     main {
         margin-left: 25%;
+    }
+    
+    /* Ocultar filtros móviles en desktop */
+    #mobileFilters {
+        display: none;
     }
 }
