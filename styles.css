@@ -148,6 +148,53 @@ main {
     height: 80px;
 }
 
+/* Estilos para los porcentajes de cumplimiento */
+.perspectiva-row td:first-child {
+    font-weight: bold;
+    background-color: #e9f7fe;
+}
+
+.proceso-row td:nth-child(2) {
+    font-weight: 500;
+    background-color: #f3f9fd;
+}
+
+.kpi-row td {
+    background-color: white;
+}
+
+.badge {
+    font-size: 0.8em;
+    padding: 0.35em 0.65em;
+    font-weight: 500;
+}
+
+/* Ajustar el ancho de las columnas */
+#kpi-table th:nth-child(1),
+#kpi-table td:nth-child(1) {
+    width: 15%;
+}
+
+#kpi-table th:nth-child(2),
+#kpi-table td:nth-child(2) {
+    width: 30%;
+}
+
+#kpi-table th:nth-child(3),
+#kpi-table td:nth-child(3),
+#kpi-table th:nth-child(4),
+#kpi-table td:nth-child(4) {
+    width: 12%;
+}
+
+#kpi-table th:nth-child(5),
+#kpi-table td:nth-child(5),
+#kpi-table th:nth-child(6),
+#kpi-table td:nth-child(6) {
+    width: 10%;
+    text-align: center;
+}
+
 @media (max-width: 768px) {
     .sidebar {
         position: static;
@@ -157,5 +204,29 @@ main {
     
     main {
         margin-left: 0;
+    }
+    
+    #kpi-table th:nth-child(1),
+    #kpi-table td:nth-child(1) {
+        width: 20%;
+    }
+    
+    #kpi-table th:nth-child(2),
+    #kpi-table td:nth-child(2) {
+        width: 25%;
+    }
+    
+    #kpi-table th:nth-child(3),
+    #kpi-table td:nth-child(3),
+    #kpi-table th:nth-child(4),
+    #kpi-table td:nth-child(4) {
+        width: 15%;
+    }
+    
+    #kpi-table th:nth-child(5),
+    #kpi-table td:nth-child(5),
+    #kpi-table th:nth-child(6),
+    #kpi-table td:nth-child(6) {
+        width: 10%;
     }
 }
