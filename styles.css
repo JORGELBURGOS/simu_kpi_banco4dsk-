@@ -113,6 +113,7 @@ main {
 .perspectiva-row {
     background-color: #e9f7fe;
     font-weight: bold;
+    cursor: pointer;
 }
 
 .proceso-row {
@@ -132,6 +133,7 @@ main {
     font-weight: inherit;
     color: inherit;
     width: 100%;
+    cursor: pointer;
 }
 
 .toggle-group:hover {
@@ -141,6 +143,7 @@ main {
 .toggle-group i {
     margin-right: 8px;
     color: var(--accent-color);
+    transition: transform 0.2s;
 }
 
 .mini-chart {
@@ -251,6 +254,35 @@ main {
         padding-top: 0.5rem;
     }
     
+    /* Estilos mejorados para los filtros móviles */
+    .accordion-button {
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+        background-color: var(--accent-color);
+        color: white;
+    }
+    
+    .accordion-button:not(.collapsed) {
+        background-color: var(--accent-color);
+        color: white;
+    }
+    
+    .accordion-body {
+        padding: 1rem;
+    }
+    
+    /* Botón de cerrar en filtros móviles */
+    .accordion-body .btn-close {
+        font-size: 0.8rem;
+        padding: 0.5rem;
+        background-size: 0.75rem;
+    }
+    
+    /* Botón de aplicar filtros */
+    .accordion-body .btn-primary {
+        margin-top: 1rem;
+    }
+    
     /* Ajustes específicos para móvil */
     #kpi-table th:nth-child(1),
     #kpi-table td:nth-child(1) {
@@ -274,21 +306,6 @@ main {
     #kpi-table th:nth-child(6),
     #kpi-table td:nth-child(6) {
         width: 10%;
-    }
-    
-    /* Estilos para los filtros móviles */
-    .accordion-button {
-        padding: 0.75rem 1rem;
-        font-size: 0.9rem;
-    }
-    
-    .accordion-body {
-        padding: 1rem;
-    }
-    
-    /* Ocultar botón exportar */
-    .btn-outline-secondary.d-none {
-        display: none !important;
     }
 }
 
@@ -332,6 +349,12 @@ select.form-select {
     main {
         margin-left: 25%;
     }
+    
+    /* Ocultar filtros móviles en desktop */
+    #mobileFilters {
+        display: none;
+    }
+}
     
     /* Ocultar filtros móviles en desktop */
     #mobileFilters {
