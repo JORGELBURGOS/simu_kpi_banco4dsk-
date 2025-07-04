@@ -306,50 +306,81 @@ function updateKpiTable(kpis, currentMonth) {
     
     const groupedData = {};
     
+    // Agrupar KPIs por perspectiva y proceso
     kpis.forEach(kpi => {
         if (!groupedData[kpi.perspectiva]) {
-            groupedData[kpi.perspectiva] = {};
+            groupedData[kpi.perspectiva] = {
+                kpis: [],
+                procesos: {}
+            };
             expandedGroups.perspectiva[kpi.perspectiva] = false;
         }
         
-        if (!groupedData[kpi.perspectiva][kpi.proceso]) {
-            groupedData[kpi.perspectiva][kpi.proceso] = [];
+        if (!groupedData[kpi.perspectiva].procesos[kpi.proceso]) {
+            groupedData[kpi.perspectiva].procesos[kpi.proceso] = {
+                kpis: [],
+                cumplimientoTotal: 0,
+                count: 0
+            };
             expandedGroups.proceso[kpi.proceso] = false;
         }
         
-        groupedData[kpi.perspectiva][kpi.proceso].push(kpi);
+        groupedData[kpi.perspectiva].kpis.push(kpi);
+        groupedData[kpi.perspectiva].procesos[kpi.proceso].kpis.push(kpi);
     });
-    
+
+    // Calcular promedios y renderizar la tabla
     Object.keys(groupedData).forEach(perspectiva => {
+        // Calcular promedio de cumplimiento para la perspectiva
+        const perspectivaKPIs = groupedData[perspectiva].kpis;
+        const perspectivaCumplimiento = calcularPromedioCumplimiento(perspectivaKPIs);
+        const perspectivaEstado = determinarEstado(perspectivaCumplimiento);
+
+        // Crear fila de perspectiva
         const perspectivaRow = document.createElement('tr');
         perspectivaRow.className = 'perspectiva-row';
         perspectivaRow.innerHTML = `
-            <td colspan="6">
+            <td>${perspectiva}</td>
+            <td colspan="2">
                 <button class="btn btn-sm toggle-group" data-group-id="${perspectiva}" data-group-type="perspectiva">
                     <i class="bi ${expandedGroups.perspectiva[perspectiva] ? 'bi-dash-square' : 'bi-plus-square'}"></i> 
                     ${perspectiva}
                 </button>
             </td>
+            <td></td>
+            <td>${formatToTwoDecimals(perspectivaCumplimiento)}%</td>
+            <td>${perspectivaEstado}</td>
         `;
         tbody.appendChild(perspectivaRow);
         
-        Object.keys(groupedData[perspectiva]).forEach(proceso => {
+        // Procesar cada proceso dentro de la perspectiva
+        Object.keys(groupedData[perspectiva].procesos).forEach(proceso => {
+            const procesoKPIs = groupedData[perspectiva].procesos[proceso].kpis;
+            const procesoCumplimiento = calcularPromedioCumplimiento(procesoKPIs);
+            const procesoEstado = determinarEstado(procesoCumplimiento);
+
+            // Crear fila de proceso
             const procesoRow = document.createElement('tr');
             procesoRow.className = 'proceso-row';
             procesoRow.setAttribute('data-parent-id', perspectiva);
             procesoRow.setAttribute('data-parent-type', 'perspectiva');
             procesoRow.style.display = expandedGroups.perspectiva[perspectiva] ? '' : 'none';
             procesoRow.innerHTML = `
-                <td colspan="6" style="padding-left: 30px;">
+                <td>${perspectiva}</td>
+                <td colspan="2" style="padding-left: 30px;">
                     <button class="btn btn-sm toggle-group" data-group-id="${proceso}" data-group-type="proceso">
                         <i class="bi ${expandedGroups.proceso[proceso] ? 'bi-dash-square' : 'bi-plus-square'}"></i> 
                         ${proceso}
                     </button>
                 </td>
+                <td></td>
+                <td>${formatToTwoDecimals(procesoCumplimiento)}%</td>
+                <td>${procesoEstado}</td>
             `;
             tbody.appendChild(procesoRow);
             
-            groupedData[perspectiva][proceso].forEach(kpi => {
+            // Procesar cada KPI dentro del proceso
+            procesoKPIs.forEach(kpi => {
                 const isMenorEsMejor = kpi.menorEsMejor || 
                                      kpi.unidad.includes("Horas") || 
                                      kpi.unidad.includes("Minutos") ||
@@ -359,9 +390,7 @@ function updateKpiTable(kpis, currentMonth) {
                     ? (kpi.valorBudget / kpi.valorActual) * 100
                     : (kpi.valorActual / kpi.valorBudget) * 100;
                 
-                const estado = cumplimiento >= 90 ? '<span class="badge bg-success">Excelente</span>' 
-                              : cumplimiento >= 70 ? '<span class="badge bg-warning">Aceptable</span>' 
-                              : '<span class="badge bg-danger">Crítico</span>';
+                const estado = determinarEstado(cumplimiento);
 
                 const valorActualFormatted = formatValue(kpi.valorActual, kpi.unidad);
                 const valorBudgetFormatted = formatValue(kpi.valorBudget, kpi.unidad);
@@ -371,7 +400,6 @@ function updateKpiTable(kpis, currentMonth) {
                 kpiRow.setAttribute('data-parent-id', proceso);
                 kpiRow.setAttribute('data-parent-type', 'proceso');
                 kpiRow.style.display = (expandedGroups.perspectiva[perspectiva] && expandedGroups.proceso[proceso]) ? '' : 'none';
-                kpiRow.style.paddingLeft = '60px';
                 kpiRow.innerHTML = `
                     <td>${kpi.perspectiva}</td>
                     <td style="padding-left: 60px;"><span class="kpi-name" data-kpi-id="${kpi.id}">${kpi.nombre}</span></td>
@@ -384,6 +412,39 @@ function updateKpiTable(kpis, currentMonth) {
             });
         });
     });
+}
+
+// Nueva función para calcular el promedio de cumplimiento
+function calcularPromedioCumplimiento(kpis) {
+    let totalCumplimiento = 0;
+    let count = 0;
+    
+    kpis.forEach(kpi => {
+        const isMenorEsMejor = kpi.menorEsMejor || 
+                             kpi.unidad.includes("Horas") || 
+                             kpi.unidad.includes("Minutos") ||
+                             kpi.nombre.includes("Error");
+        
+        const cumplimiento = isMenorEsMejor
+            ? (kpi.valorBudget / kpi.valorActual) * 100
+            : (kpi.valorActual / kpi.valorBudget) * 100;
+        
+        totalCumplimiento += cumplimiento;
+        count++;
+    });
+    
+    return count > 0 ? totalCumplimiento / count : 0;
+}
+
+// Nueva función para determinar el estado basado en el cumplimiento
+function determinarEstado(cumplimiento) {
+    if (cumplimiento >= 90) {
+        return '<span class="badge bg-success">Excelente</span>';
+    } else if (cumplimiento >= 70) {
+        return '<span class="badge bg-warning">Aceptable</span>';
+    } else {
+        return '<span class="badge bg-danger">Crítico</span>';
+    }
 }
 
 function formatValue(value, unit) {
