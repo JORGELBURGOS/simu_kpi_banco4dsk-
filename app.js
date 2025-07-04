@@ -239,6 +239,7 @@ function updateDashboard() {
         };
     });
     
+    // Obtener valores de las tarjetas principales
     let eficienciaValue = historicalData.eficiencia[currentMonthIndex] * variationFactor;
     let calidadValue = historicalData.calidad[currentMonthIndex] * variationFactor;
     let experienciaValue = historicalData.experiencia[currentMonthIndex] * variationFactor;
@@ -247,11 +248,18 @@ function updateDashboard() {
     calidadValue = Math.min(100, calidadValue);
     experienciaValue = Math.min(100, experienciaValue);
     
+    // Actualizar tarjetas
     updateKpiCard('eficiencia', eficienciaValue, 85, currentMonth);
     updateKpiCard('calidad', calidadValue, 90, currentMonth);
     updateKpiCard('experiencia', experienciaValue, 88, currentMonth);
     
-    updateKpiTable(filteredKpis, currentMonth);
+    // Actualizar tabla con los mismos valores de las tarjetas
+    updateKpiTable(filteredKpis, currentMonth, {
+        'Eficiencia': eficienciaValue,
+        'Calidad': calidadValue,
+        'Satisfacción del Cliente': experienciaValue
+    });
+    
     updateMiniCharts(currentMonthIndex);
 }
 
@@ -300,7 +308,7 @@ function updateKpiCard(kpiType, value, target, currentMonth) {
     }
 }
 
-function updateKpiTable(kpis, currentMonth) {
+function updateKpiTable(kpis, currentMonth, cardValues) {
     const tbody = document.querySelector('#kpi-table tbody');
     tbody.innerHTML = '';
     
@@ -331,9 +339,8 @@ function updateKpiTable(kpis, currentMonth) {
 
     // Calcular promedios y renderizar la tabla
     Object.keys(groupedData).forEach(perspectiva => {
-        // Calcular promedio de cumplimiento para la perspectiva
-        const perspectivaKPIs = groupedData[perspectiva].kpis;
-        const perspectivaCumplimiento = calcularPromedioCumplimiento(perspectivaKPIs);
+        // Usar el valor de la tarjeta para la perspectiva
+        const perspectivaCumplimiento = cardValues[perspectiva];
         const perspectivaEstado = determinarEstado(perspectivaCumplimiento);
 
         // Crear fila de perspectiva
@@ -414,7 +421,6 @@ function updateKpiTable(kpis, currentMonth) {
     });
 }
 
-// Nueva función para calcular el promedio de cumplimiento
 function calcularPromedioCumplimiento(kpis) {
     let totalCumplimiento = 0;
     let count = 0;
@@ -436,7 +442,6 @@ function calcularPromedioCumplimiento(kpis) {
     return count > 0 ? totalCumplimiento / count : 0;
 }
 
-// Nueva función para determinar el estado basado en el cumplimiento
 function determinarEstado(cumplimiento) {
     if (cumplimiento >= 90) {
         return '<span class="badge bg-success">Excelente</span>';
