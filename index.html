@@ -62,14 +62,19 @@
                         <div class="mb-3">
                             <label for="sucursal-select" class="form-label text-white">Sucursal</label>
                             <select class="form-select form-select-sm" id="sucursal-select">
-                                <!-- Dinámico -->
+                                <option value="todas">Todas</option>
+                                <option value="sucursal1">Sucursal Centro</option>
+                                <option value="sucursal2">Sucursal Norte</option>
+                                <option value="sucursal3">Sucursal Sur</option>
                             </select>
                         </div>
                         <div class="mb-3">
                             <label for="oficial-select" class="form-label text-white">Oficial</label>
                             <select class="form-select form-select-sm" id="oficial-select">
                                 <option value="todos">Todos</option>
-                                <!-- Dinámico -->
+                                <option value="oficial1">Juan Pérez</option>
+                                <option value="oficial2">María Gómez</option>
+                                <option value="oficial3">Carlos López</option>
                             </select>
                         </div>
                     </div>
@@ -94,6 +99,10 @@
                             </h2>
                             <div id="collapseFilters" class="accordion-collapse collapse" data-bs-parent="#mobileFilters">
                                 <div class="accordion-body bg-light p-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h5 class="mb-0">Filtros</h5>
+                                        <button type="button" class="btn-close" data-bs-toggle="collapse" data-bs-target="#collapseFilters" aria-label="Cerrar"></button>
+                                    </div>
                                     <div class="mb-3">
                                         <label for="periodo-select-mobile" class="form-label">Período</label>
                                         <select class="form-select form-select-sm" id="periodo-select-mobile">
@@ -124,15 +133,25 @@
                                     <div class="mb-3">
                                         <label for="sucursal-select-mobile" class="form-label">Sucursal</label>
                                         <select class="form-select form-select-sm" id="sucursal-select-mobile">
-                                            <!-- Dinámico -->
+                                            <option value="todas">Todas</option>
+                                            <option value="sucursal1">Sucursal Centro</option>
+                                            <option value="sucursal2">Sucursal Norte</option>
+                                            <option value="sucursal3">Sucursal Sur</option>
                                         </select>
                                     </div>
                                     <div class="mb-3">
                                         <label for="oficial-select-mobile" class="form-label">Oficial</label>
                                         <select class="form-select form-select-sm" id="oficial-select-mobile">
                                             <option value="todos">Todos</option>
-                                            <!-- Dinámico -->
+                                            <option value="oficial1">Juan Pérez</option>
+                                            <option value="oficial2">María Gómez</option>
+                                            <option value="oficial3">Carlos López</option>
                                         </select>
+                                    </div>
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFilters">
+                                            <i class="bi bi-check-lg me-2"></i>Aplicar Filtros
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -142,11 +161,6 @@
 
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h1 class="h2">Dashboard de KPIs</h1>
-                    <div class="btn-toolbar mb-2 mb-md-0 d-none">
-                        <div class="btn-group me-2">
-                            <button type="button" class="btn btn-sm btn-outline-secondary d-none">Exportar</button>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- KPI Cards -->
@@ -239,7 +253,48 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <!-- Dinámico -->
+                                    <tr class="perspectiva-row">
+                                        <td>Eficiencia</td>
+                                        <td colspan="5" class="toggle-group" data-bs-toggle="collapse" data-bs-target="#eficiencia-row">
+                                            <i class="bi bi-chevron-right"></i> Eficiencia Operativa
+                                        </td>
+                                    </tr>
+                                    <tr class="collapse" id="eficiencia-row">
+                                        <td></td>
+                                        <td>Tiempo promedio de atención</td>
+                                        <td>15 min</td>
+                                        <td>10 min</td>
+                                        <td>75%</td>
+                                        <td><span class="badge bg-warning">Regular</span></td>
+                                    </tr>
+                                    <tr class="perspectiva-row">
+                                        <td>Calidad</td>
+                                        <td colspan="5" class="toggle-group" data-bs-toggle="collapse" data-bs-target="#calidad-row">
+                                            <i class="bi bi-chevron-right"></i> Calidad de Servicio
+                                        </td>
+                                    </tr>
+                                    <tr class="collapse" id="calidad-row">
+                                        <td></td>
+                                        <td>Errores en transacciones</td>
+                                        <td>2%</td>
+                                        <td>1%</td>
+                                        <td>50%</td>
+                                        <td><span class="badge bg-danger">Crítico</span></td>
+                                    </tr>
+                                    <tr class="perspectiva-row">
+                                        <td>Experiencia</td>
+                                        <td colspan="5" class="toggle-group" data-bs-toggle="collapse" data-bs-target="#experiencia-row">
+                                            <i class="bi bi-chevron-right"></i> Satisfacción del Cliente
+                                        </td>
+                                    </tr>
+                                    <tr class="collapse" id="experiencia-row">
+                                        <td></td>
+                                        <td>NPS (Net Promoter Score)</td>
+                                        <td>75</td>
+                                        <td>80</td>
+                                        <td>94%</td>
+                                        <td><span class="badge bg-success">Excelente</span></td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -287,6 +342,15 @@
         syncSelects('perspectiva-select', 'perspectiva-select-mobile');
         syncSelects('sucursal-select', 'sucursal-select-mobile');
         syncSelects('oficial-select', 'oficial-select-mobile');
+
+        // Actualizar iconos de flecha en los grupos toggle
+        document.querySelectorAll('.toggle-group').forEach(group => {
+            group.addEventListener('click', function() {
+                const icon = this.querySelector('i');
+                icon.classList.toggle('bi-chevron-right');
+                icon.classList.toggle('bi-chevron-down');
+            });
+        });
     </script>
 </body>
 </html>
